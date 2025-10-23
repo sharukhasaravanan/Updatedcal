@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS ROOFINGS - Advanced Price Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a5276 0%, #3498db 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .calculator-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .logo span {
+            color: #f39c12;
+        }
+
+        .logo p {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .sheet-type-selector {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            text-align: center;
+        }
+
+        .sheet-type-selector h3 {
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .sheet-type-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .sheet-type-btn {
+            padding: 12px 30px;
+            border: 2px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+
+        .sheet-type-btn.active {
+            color: white;
+            border-color: #3498db;
+        }
+
+        .sheet-type-btn.profile.active {
+            background: #3498db;
+        }
+
+        .sheet-type-btn.liner.active {
+            background: #27ae60;
+        }
+
+        .sheet-type-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .breadth-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .default-prices {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .default-prices h3 {
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .price-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-item label {
+            min-width: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .price-item input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 80px;
+            font-size: 0.9rem;
+            background: #eee;
+        }
+
+        .sheet-entries {
+            margin: 25px 0;
+            overflow-x: auto;
+        }
+
+        .entry-header {
+            display: grid;
+            grid-template-columns: 160px 130px 140px 120px 100px 90px 130px 130px 130px 70px;
+            gap: 10px;
+            padding: 12px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            min-width: 1200px;
+        }
+
+        .entry-row {
+            display: grid;
+            grid-template-columns: 160px 130px 140px 120px 100px 90px 130px 130px 130px 70px;
+            gap: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+            min-width: 1200px;
+        }
+
+        .entry-row:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .quantity-input {
+            padding: 8px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            width: 100%;
+            background: white;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .dimension-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .dimension-inputs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dimension-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .dimension-inputs input {
+            flex: 1;
+            text-align: center;
+        }
+
+        .input-unit {
+            font-size: 0.7rem;
+            color: #666;
+            text-align: center;
+            margin-top: 3px;
+        }
+
+        .custom-price-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .custom-price-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .custom-price-input {
+            width: 80px !important;
+        }
+
+        .use-custom {
+            width: 18px;
+            height: 18px;
+        }
+
+        .bend-checkbox {
+            width: 18px;
+            height: 18px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .bend-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: center;
+        }
+
+        .quantity-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .color-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .color-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f1f8ff;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .result h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .summary-item h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .summary-item .value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .breakdown {
+            margin-top: 15px;
+        }
+
+        .breakdown h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .breakdown table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .breakdown th, .breakdown td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .breakdown th {
+            background: #34495e;
+            color: white;
+        }
+
+        .breakdown tr:hover {
+            background: #f5f5f5;
+        }
+
+        .grand-total {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 14px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .note {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .bend-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 5px;
+            border: 1px solid #ffeaa7;
+            justify-content: center;
+        }
+
+        .bend-option input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .bend-option label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .area-display, .price-display {
+            text-align: center;
+            font-weight: 600;
+            padding: 8px 5px;
+        }
+
+        .bill-preview {
+            margin-top: 20px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #3498db;
+            display: none;
+            font-family: Arial, sans-serif;
+        }
+
+        .bill-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .bill-header h2 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+        }
+
+        .bill-header p {
+            color: #666;
+            margin: 2px 0;
+        }
+
+        .bill-customer-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bill-customer-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .customer-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .customer-inputs input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .bill-table th {
+            background: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-weight: 600;
+        }
+
+        .bill-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .bill-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .bill-summary {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .bill-total-row {
+            background: #2c3e50 !important;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .bill-total-row td {
+            border-color: #2c3e50;
+        }
+
+        .bill-notes {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 5px;
+            border: 1px solid #ffeaa7;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .bill-item-details {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .bill-preview, .bill-preview * {
+                visibility: visible;
+            }
+            .bill-preview {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+            }
+            .share-buttons {
+                display: none;
+            }
+        }
+
+        /* Mobile Responsive for bill */
+        @media (max-width: 768px) {
+            .customer-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .bill-table {
+                font-size: 0.8rem;
+            }
+            
+            .bill-table th,
+            .bill-table td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="logo">
+            <h1>SS <span>ROOFINGS</span></h1>
+            <p>Advanced Price Calculator</p>
+        </div>
+
+        <!-- Sheet Type Selector -->
+        <div class="sheet-type-selector">
+            <h3>Select Sheet Type</h3>
+            <div class="sheet-type-buttons">
+                <div class="sheet-type-btn profile active" data-type="profile">
+                    Profile Sheets
+                </div>
+                <div class="sheet-type-btn liner" data-type="liner">
+                    Liner Sheets
+                </div>
+            </div>
+            <div class="breadth-info" id="breadthInfo">
+                Fixed Breadth: 1085mm
+            </div>
+        </div>
+
+        <!-- Default Price Settings -->
+        <div class="default-prices">
+            <h3>Default Prices (Reference)</h3>
+            <div class="price-grid">
+                <div class="price-item">
+                    <label>0.35mm:</label>
+                    <input type="number" id="default-price-0.35" value="323" step="0.01" min="0" readonly>
+                </div>
+                <div class="price-item">
+                    <label>0.40mm:</label>
+                    <input type="number" id="default-price-0.40" value="345" step="0.01" min="0" readonly>
+                </div>
+                <div class="price-item">
+                    <label>0.45mm:</label>
+                    <input type="number" id="default-price-0.45" value="366" step="0.01" min="0" readonly>
+                </div>
+                <div class="price-item">
+                    <label>0.47mm:</label>
+                    <input type="number" id="default-price-0.47" value="387.50" step="0.01" min="0" readonly>
+                </div>
+                <div class="price-item">
+                    <label>0.50mm:</label>
+                    <input type="number" id="default-price-0.50" value="420" step="0.01" min="0" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sheet Entries -->
+        <div class="sheet-entries">
+            <div class="entry-header">
+                <div>Length</div>
+                <div>Thickness</div>
+                <div>Custom Price</div>
+                <div>Color</div>
+                <div>Quantity</div>
+                <div>Bend</div>
+                <div>Area per Sheet</div>
+                <div>Total Area</div>
+                <div>Price</div>
+                <div>Action</div>
+            </div>
+            <div id="entries-container">
+                <!-- Entries will be added here dynamically -->
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button type="button" class="btn btn-primary" onclick="addEntry()">+ Add Another Sheet</button>
+            <button type="button" class="btn btn-success" onclick="calculateTotal()">Calculate Total</button>
+            <button type="button" class="btn btn-danger" onclick="resetAll()">Reset All</button>
+        </div>
+
+        <!-- Global Bend Option -->
+        <div class="bend-option">
+            <input type="checkbox" id="bendAllRequired" onchange="toggleAllBends()">
+            <label for="bendAllRequired"><strong>Apply Bend to ALL Sheets</strong></label>
+        </div>
+
+        <!-- Results -->
+        <div class="result" id="result" style="display: none;">
+            <h3>Order Summary - <span id="sheetTypeLabel">Profile Sheets</span></h3>
+            
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h4>Total Sheets</h4>
+                    <div class="value" id="totalSheets">0</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Total Square Meters</h4>
+                    <div class="value" id="totalSqm">0.000</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Sheets with Bend</h4>
+                    <div class="value" id="sheetsWithBend">0</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Total Bend Charge</h4>
+                    <div class="value" id="totalBend">₹0.00</div>
+                </div>
+                <div class="summary-item">
+                    <h4>Total Price</h4>
+                    <div class="value" id="summaryTotal">₹0.00</div>
+                </div>
+            </div>
+
+            <div class="breakdown" id="breakdown">
+                <!-- Breakdown will be added here -->
+            </div>
+
+            <div class="grand-total" id="grandTotal">
+                Grand Total: ₹0.00
+            </div>
+
+             <!-- Share Bill Section -->
+            <div class="bill-preview" id="billPreview">
+                <!-- Bill Header -->
+                <div class="bill-header">
+                    <h2>SS ROOFINGS</h2>
+                    <p>DG. PUDUR, Coimbatore District</p>
+                    <p>📞 97505 93833 | 73737 52663</p>
+                    <p>QUOTATION</p>
+                </div>
+
+                <!-- Customer Information -->
+                <div class="bill-customer-info">
+                    <h4>Customer Details</h4>
+                    <div class="customer-inputs">
+                        <input type="text" id="customerName" placeholder="Customer Name">
+                        <input type="text" id="customerPhone" placeholder="Phone Number">
+                        <input type="text" id="customerAddress" placeholder="Address" style="grid-column: 1 / -1;">
+                    </div>
+                </div>
+
+                <!-- Bill Table -->
+                <table class="bill-table" id="billTable">
+                    <thead>
+                        <tr>
+                            <th width="5%">S.No</th>
+                            <th width="35%">Product Details</th>
+                            <th width="10%">Qty</th>
+                            <th width="15%">Area (sqm)</th>
+                            <th width="15%">Rate (₹/sqm)</th>
+                            <th width="20%">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billTableBody">
+                        <!-- Bill items will be added here -->
+                    </tbody>
+                </table>
+                <!-- Bill Summary -->
+                <div class="bill-summary" id="billSummary">
+                    <!-- Summary will be added here -->
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="bill-notes">
+                    <h4>Terms & Conditions:</h4>
+                    <ul style="margin: 5px 0; padding-left: 20px; font-size: 0.8rem;">
+                        <li>Prices include GST as applicable</li>
+                        <li>Delivery: 3-5 working days</li>
+                        <li>Measurement variations: ±2% accepted</li>
+                        <li>Payment: 50% advance, balance before delivery</li>
+                        <li>Quotation valid for 15 days</li>
+                    </ul>
+                </div>
+
+                <!-- Share Buttons -->
+                <div class="share-buttons">
+                    <button type="button" class="btn btn-warning" onclick="printBill()">🖨️ Print Quotation</button>
+                    <button type="button" class="btn btn-success" onclick="shareBill()">📤 Share Quotation</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBill()">💾 Save as PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            <p><strong>Profile Sheets:</strong> 1085mm breadth | <strong>Liner Sheets:</strong> 1188mm breadth</p>
+            <p><strong>Bend Charge:</strong> +₹10.76 per square meter</p>
+            <p><strong>Note:</strong> Use custom price checkbox to override default prices. Check bend for sheets that need bending.</p>
+        </div>
+    </div>
+
+    <script>
+        let entryCount = 0;
+        let currentSheetType = 'profile';
+        const BEND_CHARGE = 10.76;
+        const breadths = {
+            'profile': 1085,
+            'liner': 1188
+        };
+        const defaultPrices = {
+            '0.35': 323,
+            '0.40': 345,
+            '0.45': 366,
+            '0.47': 387.50,
+            '0.50': 420
+        };
+        const colors = [
+            'Bare',
+            'Off White', 
+            'Brick Red',
+            'Royal Blue',
+            'Light Blue',
+            'Mist Green',
+            'Caulfield Green',
+            'Reliance Green',
+            'Purple',
+            'Violet',
+            'Orange',
+            'Gray'
+        ];
+
+        // Add first entry on load
+        document.addEventListener('DOMContentLoaded', function() {
+            addEntry();
+            setupSheetTypeSelector();
+        });
+
+        function setupSheetTypeSelector() {
+            const sheetTypeButtons = document.querySelectorAll('.sheet-type-btn');
+            
+            sheetTypeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    sheetTypeButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSheetType = this.dataset.type;
+                    document.getElementById('breadthInfo').textContent = 
+                        `Fixed Breadth: ${breadths[currentSheetType]}mm`;
+                    document.getElementById('sheetTypeLabel').textContent = 
+                        currentSheetType === 'profile' ? 'Profile Sheets' : 'Liner Sheets';
+                    recalculateAllEntries();
+                });
+            });
+        }
+
+        function recalculateAllEntries() {
+            const entries = document.querySelectorAll('.entry-row');
+            entries.forEach(entry => {
+                calculateEntry.call(entry);
+            });
+            calculateTotal();
+        }
+
+        function addEntry() {
+            entryCount++;
+            const entriesContainer = document.getElementById('entries-container');
+            
+            const entryRow = document.createElement('div');
+            entryRow.className = 'entry-row';
+            entryRow.id = `entry-${entryCount}`;
+            
+            // Create color options HTML
+            let colorOptions = '<option value="">Select Color</option>';
+            colors.forEach(color => {
+                colorOptions += `<option value="${color}">${color}</option>`;
+            });
+            
+            entryRow.innerHTML = `
+                <div class="dimension-group">
+                    <div class="dimension-label">Length</div>
+                    <div class="dimension-inputs">
+                        <div>
+                            <input type="number" class="feet" placeholder="0" value="0" min="0">
+                            <div class="input-unit">Feet</div>
+                        </div>
+                        <div>
+                            <input type="number" class="inches" placeholder="0" value="0" min="0" max="11">
+                            <div class="input-unit">Inches</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="dimension-label">Thickness</div>
+                    <select class="thickness">
+                        <option value="0.35">0.35mm</option>
+                        <option value="0.40">0.40mm</option>
+                        <option value="0.45">0.45mm</option>
+                        <option value="0.47">0.47mm</option>
+                        <option value="0.50">0.50mm</option>
+                    </select>
+                </div>
+                <div class="custom-price-section">
+                    <div class="dimension-label">Custom Price</div>
+                    <div class="custom-price-controls">
+                        <input type="checkbox" class="use-custom">
+                        <input type="number" class="custom-price-input" placeholder="Price" step="0.01" min="0" disabled>
+                    </div>
+                </div>
+                <div class="color-section">
+                    <div class="dimension-label">Color</div>
+                    <select class="color-select">
+                        ${colorOptions}
+                    </select>
+                </div>
+                <div class="quantity-section">
+                    <div class="dimension-label">Quantity</div>
+                    <input type="number" class="quantity-input" value="1" min="1" step="1">
+                </div>
+                <div class="bend-section">
+                    <div class="dimension-label">Bend</div>
+                    <input type="checkbox" class="bend-checkbox">
+                    <div class="input-unit">+₹10.76/sqm</div>
+                </div>
+                <div class="area-display area-per-sheet">0.000 sqm</div>
+                <div class="area-display total-area">0.000 sqm</div>
+                <div class="price-display price">₹0.00</div>
+                <button type="button" class="delete-btn" onclick="deleteEntry(${entryCount})">×</button>
+            `;
+            
+            entriesContainer.appendChild(entryRow);
+            
+            // Add event listeners
+            const inputs = entryRow.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    calculateEntry.call(entryRow);
+                });
+            });
+            
+            const customCheckbox = entryRow.querySelector('.use-custom');
+            const customPriceInput = entryRow.querySelector('.custom-price-input');
+            const bendCheckbox = entryRow.querySelector('.bend-checkbox');
+            const thicknessSelect = entryRow.querySelector('.thickness');
+            
+            customCheckbox.addEventListener('change', function() {
+                customPriceInput.disabled = !this.checked;
+                if (this.checked) {
+                    const thickness = thicknessSelect.value;
+                    customPriceInput.value = defaultPrices[thickness];
+                    customPriceInput.focus();
+                }
+                calculateEntry.call(entryRow);
+            });
+
+            bendCheckbox.addEventListener('change', function() {
+                calculateEntry.call(entryRow);
+            });
+
+            thicknessSelect.addEventListener('change', function() {
+                if (customCheckbox.checked) {
+                    customPriceInput.value = defaultPrices[this.value];
+                }
+                calculateEntry.call(entryRow);
+            });
+            
+            calculateEntry.call(entryRow);
+        }
+
+        function deleteEntry(id) {
+            const entry = document.getElementById(`entry-${id}`);
+            if (entry) {
+                entry.remove();
+                calculateTotal();
+            }
+        }
+
+        function calculateEntry() {
+            const row = this.closest('.entry-row') || this;
+            const feet = parseFloat(row.querySelector('.feet').value) || 0;
+            const inches = parseFloat(row.querySelector('.inches').value) || 0;
+            const thickness = row.querySelector('.thickness').value;
+            const quantity = parseInt(row.querySelector('.quantity-input').value) || 1;
+            const useCustom = row.querySelector('.use-custom').checked;
+            const customPrice = parseFloat(row.querySelector('.custom-price-input').value) || 0;
+            const bendRequired = row.querySelector('.bend-checkbox').checked;
+            const color = row.querySelector('.color-select').value;
+            
+            // Convert to mm and calculate area
+            const totalInches = (feet * 12) + inches;
+            const lengthInMm = totalInches * 25.4;
+            const breadthInMm = breadths[currentSheetType];
+            const areaPerSheet = (lengthInMm * breadthInMm) / 1000000;
+            const totalArea = areaPerSheet * quantity;
+            
+            // Get price (custom or default)
+            let pricePerSqm = useCustom ? customPrice : defaultPrices[thickness];
+            if (!pricePerSqm || pricePerSqm <= 0) pricePerSqm = defaultPrices[thickness];
+            
+            // Calculate base price
+            let totalPrice = totalArea * pricePerSqm;
+            
+            // Apply bend charge if required for this entry
+            if (bendRequired) {
+                const bendCharge = totalArea * BEND_CHARGE;
+                totalPrice += bendCharge;
+            }
+            
+            // Update display
+            row.querySelector('.area-per-sheet').textContent = areaPerSheet.toFixed(3) + ' sqm';
+            row.querySelector('.total-area').textContent = totalArea.toFixed(3) + ' sqm';
+            row.querySelector('.price').textContent = '₹' + totalPrice.toFixed(2);
+        }
+
+        function calculateTotal() {
+            const entries = document.querySelectorAll('.entry-row');
+            
+            let totalSheets = 0;
+            let totalSqm = 0;
+            let totalPrice = 0;
+            let totalBendCharge = 0;
+            let sheetsWithBend = 0;
+            let breakdown = {};
+            
+            entries.forEach(entry => {
+                calculateEntry.call(entry);
+                
+                const quantity = parseInt(entry.querySelector('.quantity-input').value) || 1;
+                const thickness = entry.querySelector('.thickness').value;
+                const area = parseFloat(entry.querySelector('.total-area').textContent) || 0;
+                const price = parseFloat(entry.querySelector('.price').textContent.replace('₹', '')) || 0;
+                const bendRequired = entry.querySelector('.bend-checkbox').checked;
+                
+                totalSheets += quantity;
+                totalSqm += area;
+                totalPrice += price;
+                
+                if (bendRequired) {
+                    sheetsWithBend += quantity;
+                    totalBendCharge += (area * BEND_CHARGE);
+                }
+                
+                // Add to breakdown by thickness
+                if (!breakdown[thickness]) {
+                    breakdown[thickness] = { sheets: 0, sqm: 0, price: 0, sheetsWithBend: 0 };
+                }
+                breakdown[thickness].sheets += quantity;
+                breakdown[thickness].sqm += area;
+                breakdown[thickness].price += price;
+                if (bendRequired) {
+                    breakdown[thickness].sheetsWithBend += quantity;
+                }
+            });
+            
+            // Update summary
+            document.getElementById('totalSheets').textContent = totalSheets;
+            document.getElementById('totalSqm').textContent = totalSqm.toFixed(3);
+            document.getElementById('sheetsWithBend').textContent = sheetsWithBend;
+            document.getElementById('totalBend').textContent = '₹' + totalBendCharge.toFixed(2);
+            document.getElementById('summaryTotal').textContent = '₹' + totalPrice.toFixed(2);
+            document.getElementById('grandTotal').textContent = 'Grand Total: ₹' + totalPrice.toFixed(2);
+            
+            // Update breakdown
+            const breakdownContainer = document.getElementById('breakdown');
+            let breakdownHTML = '<h4>Breakdown by Thickness</h4><table>';
+            breakdownHTML += '<tr><th>Thickness</th><th>Sheets</th><th>With Bend</th><th>Area (sqm)</th><th>Price</th></tr>';
+            
+            for (const thickness in breakdown) {
+                breakdownHTML += `
+                    <tr>
+                        <td>${thickness}mm</td>
+                        <td>${breakdown[thickness].sheets}</td>
+                        <td>${breakdown[thickness].sheetsWithBend}</td>
+                        <td>${breakdown[thickness].sqm.toFixed(3)}</td>
+                        <td>₹${breakdown[thickness].price.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+            
+            breakdownHTML += '</table>';
+            breakdownContainer.innerHTML = breakdownHTML;
+            
+            // Generate bill preview
+            generateBillPreview();
+            
+            // Show results
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function generateBillPreview() {
+            const entries = document.querySelectorAll('.entry-row');
+            const billTableBody = document.getElementById('billTableBody');
+            const billSummary = document.getElementById('billSummary');
+            billTableBody.innerHTML = '';
+            
+            let serialNumber = 1;
+            let totalSheets = 0;
+            let totalArea = 0;
+            let subtotal = 0;
+            
+            entries.forEach(entry => {
+                const feet = parseFloat(entry.querySelector('.feet').value) || 0;
+                const inches = parseFloat(entry.querySelector('.inches').value) || 0;
+                const thickness = entry.querySelector('.thickness').value;
+                const quantity = parseInt(entry.querySelector('.quantity-input').value) || 1;
+                const color = entry.querySelector('.color-select').value || 'Standard';
+                const bendRequired = entry.querySelector('.bend-checkbox').checked;
+                const areaPerSheet = parseFloat(entry.querySelector('.area-per-sheet').textContent) || 0;
+                const totalAreaEntry = parseFloat(entry.querySelector('.total-area').textContent) || 0;
+                const price = parseFloat(entry.querySelector('.price').textContent.replace('₹', '')) || 0;
+                const useCustom = entry.querySelector('.use-custom').checked;
+                const customPrice = parseFloat(entry.querySelector('.custom-price-input').value) || defaultPrices[thickness];
+                
+                if (feet > 0 || inches > 0) {
+                    // Calculate rate per sqm
+                    const ratePerSqm = useCustom ? customPrice : defaultPrices[thickness];
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${serialNumber}</td>
+                        <td>
+                            <strong>${currentSheetType === 'profile' ? 'Profile' : 'Liner'} Sheet</strong><br>
+                            <div class="bill-item-details">
+                                 ${feet}'${inches}" |  ${color}<br>
+                                 ${thickness}mm thickness${bendRequired ? ' |  With Bend' : ''}
+                            </div>
+                        </td>
+                        <td>${quantity} sheets</td>
+                        <td>${totalAreaEntry.toFixed(3)}</td>
+                        <td>₹${ratePerSqm.toFixed(2)}</td>
+                        <td><strong>₹${price.toFixed(2)}</strong></td>
+                    `;
+                    billTableBody.appendChild(row);
+                    
+                    serialNumber++;
+                    totalSheets += quantity;
+                    totalArea += totalAreaEntry;
+                    subtotal += price;
+                }
+            });
+            
+            // Calculate GST (assuming 18%)
+            const gst = subtotal * 0.18;
+            const grandTotal = subtotal + gst;
+            
+            // Update bill summary
+            billSummary.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <strong>Summary:</strong><br>
+                        Total Sheets: ${totalSheets}<br>
+                        Total Area: ${totalArea.toFixed(3)} sqm<br>
+                        Sheet Type: ${currentSheetType === 'profile' ? 'Profile Sheets' : 'Liner Sheets'}
+                    </div>
+                    <div style="text-align: right;">
+                        <strong>Amount Breakdown:</strong><br>
+                        Subtotal: ₹${subtotal.toFixed(2)}<br>
+                        GST (18%): ₹${gst.toFixed(2)}<br>
+                        <strong style="font-size: 1.1rem;">Grand Total: ₹${grandTotal.toFixed(2)}</strong>
+                    </div>
+                </div>
+            `;
+            
+            // Show bill preview
+            document.getElementById('billPreview').style.display = 'block';
+        }
+
+        function printBill() {
+            window.print();
+        }
+
+        function shareBill() {
+            const customerName = document.getElementById('customerName').value || 'Customer';
+            const customerPhone = document.getElementById('customerPhone').value || 'Not provided';
+            
+            let billText = `🏠 *SS ROOFINGS - QUOTATION* 🏠\n`;
+            billText += `📍 DG. PUDUR, Coimbatore District\n`;
+            billText += `📞 97505 93833 | 73737 52663\n\n`;
+            billText += `👤 *Customer:* ${customerName}\n`;
+            billText += `📱 *Phone:* ${customerPhone}\n`;
+            billText += `📋 *Sheet Type:* ${currentSheetType === 'profile' ? 'Profile Sheets' : 'Liner Sheets'}\n\n`;
+            billText += `📊 *ORDER SUMMARY:*\n`;
+            billText += `┌──────────────────────────────────────┐\n`;
+            
+            const entries = document.querySelectorAll('.entry-row');
+            let serialNumber = 1;
+            let grandTotal = 0;
+            
+            entries.forEach(entry => {
+                const feet = parseFloat(entry.querySelector('.feet').value) || 0;
+                const inches = parseFloat(entry.querySelector('.inches').value) || 0;
+                const thickness = entry.querySelector('.thickness').value;
+                const quantity = parseInt(entry.querySelector('.quantity-input').value) || 1;
+                const color = entry.querySelector('.color-select').value || 'Standard';
+                const bendRequired = entry.querySelector('.bend-checkbox').checked;
+                const totalArea = parseFloat(entry.querySelector('.total-area').textContent) || 0;
+                const price = parseFloat(entry.querySelector('.price').textContent.replace('₹', '')) || 0;
+                
+                if (feet > 0 || inches > 0) {
+                    billText += `│ ${serialNumber}. ${currentSheetType === 'profile' ? 'Profile' : 'Liner'} Sheet\n`;
+                    billText += `│     ${feet}'${inches}" |  ${color}\n`;
+                    billText += `│     ${thickness}mm${bendRequired ? ' |  With Bend' : ''}\n`;
+                    billText += `│     ${quantity} sheets |  ${totalArea.toFixed(3)} sqm\n`;
+                    billText += `│    💰 ₹${price.toFixed(2)}\n`;
+                    billText += `│──────────────────────────────────────│\n`;
+                    
+                    serialNumber++;
+                    grandTotal += price;
+                }
+            });
+            
+            const gst = grandTotal * 0.18;
+            const finalTotal = grandTotal + gst;
+            
+            billText += `│ *SUB TOTAL:* ₹${grandTotal.toFixed(2)}\n`;
+            billText += `│ *GST (18%):* ₹${gst.toFixed(2)}\n`;
+            billText += `│ *GRAND TOTAL:* ₹${finalTotal.toFixed(2)}\n`;
+            billText += `└──────────────────────────────────────┘\n\n`;
+            billText += `📝 *Terms & Conditions:*\n`;
+            billText += `• Prices include GST\n`;
+            billText += `• Delivery: 3-5 working days\n`;
+            billText += `• 50% advance required\n`;
+            billText += `• Valid for 15 days\n\n`;
+            billText += `Thank you for choosing SS ROOFINGS! 🏡`;
+            
+            // Share using Web Share API if available
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SS ROOFINGS - Quotation',
+                    text: billText
+                });
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(billText).then(() => {
+                    alert('Quotation copied to clipboard! You can now paste it in WhatsApp.');
+                });
+            }
+        }
+
+        function saveBill() {
+            alert('PDF feature would require additional libraries. For now, use "Print" and save as PDF from print dialog.');
+        }
+
+        function toggleAllBends() {
+            const bendAll = document.getElementById('bendAllRequired').checked;
+            const bendCheckboxes = document.querySelectorAll('.bend-checkbox');
+            
+            bendCheckboxes.forEach(checkbox => {
+                checkbox.checked = bendAll;
+            });
+            
+            calculateTotal();
+        }
+
+        function resetAll() {
+            document.getElementById('entries-container').innerHTML = '';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('billPreview').style.display = 'none';
+            document.getElementById('bendAllRequired').checked = false;
+            entryCount = 0;
+            addEntry();
+        }
+    </script>
+</body>
+</html>
